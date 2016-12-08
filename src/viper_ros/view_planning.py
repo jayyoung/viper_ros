@@ -244,12 +244,14 @@ class ViewPlanning(smach.State):
                 # get dynamic clusters point cloud
                 rospy.loginfo("waiting to receive dynamic clusters. Timeout 4 minutes....")
                 dynamic_clusters = rospy.wait_for_message("/quasimodo/segmentation/roomObservation/dynamic_clusters",PointCloud2,60*4)
+                rospy.loginfo("got clusters:")
+                rospy.loginfo(dynamic_clusters.header)
 
                 # ok, so if this is empty, we should just quit the task
                 # this is accomplished by returning the octomap, which should be None at this point
                 # and is picked up in the execute method and dealt with
-                points_in_cloud = len(list(pc2.read_points(dynamic_clusters)))
-                if(points_in_cloud == 0):
+                rospy.loginfo("points in cloud: " + str(len(dynamic_clusters.data)))
+                if(len(dynamic_clusters.data) == 0):
                     rospy.logerr("No points in dynamic cluster cloud. Quitting task.")
                     # octomap still hasn't been set here, so it's still None
                     return octomap
