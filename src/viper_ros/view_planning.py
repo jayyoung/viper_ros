@@ -284,10 +284,14 @@ class ViewPlanning(smach.State):
             rospy.loginfo("Waiting for initial surface view evaluation")
             eval_action_server_name = "/surface_based_object_learning/evaluate_surface"
             client = actionlib.SimpleActionClient(eval_action_server_name, EvaluateSurfaceAction)
+            rospy.loginfo("Getting Action Server")
             client.wait_for_server(rospy.Duration(60))
+            rospy.loginfo("Sending Goal")
             goal = EvaluateSurfaceGoal(waypoint_id=waypoint)
             client.send_goal(goal)
-            client.wait_for_result(rospy.Duration(120)) # usually takes about ~20 seconds, but lets be generous in the case of heavy load
+            rospy.loginfo("Waiting for result...")
+            client.wait_for_result(rospy.Duration(360)) # usually takes about ~20 seconds, but lets be generous in the case of heavy load
+            rospy.loginfo("Done! Getting the octomap")
             octomap = client.get_result().octomap
             pass
         else: # mode == 'object' or mode == 'human':
